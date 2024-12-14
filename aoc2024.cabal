@@ -1,0 +1,18 @@
+cabal-version: 2.2
+name: aoc2024
+version: 1.0
+
+executable aoc2024
+  hs-source-dirs: src
+  main-is: Main.hs
+  other-modules:
+    Utils
+    Runner
+    Day1.Part1
+    Day1.Part2
+  build-depends:
+    base
+    , Cabal
+    , directory
+    , filepath
+
