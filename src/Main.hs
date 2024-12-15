@@ -15,7 +15,7 @@ main = do
   result <- return $ aoc (day, part, contents)
   print result
 
-parseArgs :: [String] -> IO (Integer, Integer, String)
+parseArgs :: [String] -> IO (Int, Int, String)
 parseArgs args =
   case args of
     [day, part, input] ->
@@ -25,7 +25,7 @@ parseArgs args =
         intPart = errorIfNothing (toInt part) "[part] is not a number"
     _ -> error "syntax: aoc [day] [part] [puzzle input]"
 
-getInputData :: String -> Integer -> IO String
+getInputData :: String -> Int -> IO String
 getInputData fileName day = do
   cwd <- getCurrentDirectory
   path <- return (cwd </> "src" </> "Day" ++ show day </> fileName ++ ".txt")
