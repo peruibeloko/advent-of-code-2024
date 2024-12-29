@@ -1,4 +1,4 @@
-cabal-version: 2.2
+cabal-version: 3.12
 name: aoc2024
 version: 1.0
 
@@ -8,6 +8,7 @@ executable aoc2024
   other-modules:
     Utils
     Runner
+    ErrorHandling
     Day1.Part1
     Day1.Part2
   build-depends:

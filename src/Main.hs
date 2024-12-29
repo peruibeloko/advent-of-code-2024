@@ -1,8 +1,10 @@
 module Main (main) where
 
-import Debug.Trace (trace, traceM, traceShow, traceShowM)
-import Runner (aoc)
-import System.Directory (getCurrentDirectory)
+import Control.Exception (throwIO)
+import Data.Maybe (isNothing)
+import ErrorHandling (PuzzleInputException (..), UnhandledPuzzleTriple, handleException, throwParseErrors)
+import Runner (PuzzleTriple, aoc)
+import System.Directory (doesFileExist, getCurrentDirectory)
 import System.Environment (getArgs)
 import System.FilePath ((</>))
 import Text.Read (readMaybe)
@@ -10,29 +12,32 @@ import Utils (toInt)
 
 main :: IO ()
 main = do
-  (day, part, input) <- getArgs >>= parseArgs
-  contents <- getInputData input day
-  result <- return $ aoc (day, part, contents)
-  print result
+  args <- getArgs
+  (day, part, inputFile) <- handleException . throwParseErrors $ parseArgs args
+  puzzleInput <- handleException $ getInputData inputFile day
+  putStrLn $
+    "Result for day \x1B[1;33m"
+      <> show day
+      <> "\x1B[0m part \x1B[1;33m"
+      <> show part
+      <> "\x1B[0m using \x1B[1;33m"
+      <> inputFile
+      <> ".txt\x1B[0m was \x1B[1;33m"
+      <> aoc (day, part, puzzleInput)
+      <> "\x1B[0m"
 
-parseArgs :: [String] -> IO (Int, Int, String)
-parseArgs args =
-  case args of
-    [day, part, input] ->
-      return (intDay, intPart, input)
-      where
-        intDay = errorIfNothing (toInt day) "[day] is not a number"
-        intPart = errorIfNothing (toInt part) "[part] is not a number"
-    _ -> error "syntax: aoc [day] [part] [puzzle input]"
+parseArgs :: [String] -> Maybe UnhandledPuzzleTriple
+parseArgs [dayInput, partInput, input] = Just (toInt dayInput, toInt partInput, input)
+parseArgs _ = Nothing
 
 getInputData :: String -> Int -> IO String
 getInputData fileName day = do
   cwd <- getCurrentDirectory
-  path <- return (cwd </> "src" </> "Day" ++ show day </> fileName ++ ".txt")
-  readFile path
-
-errorIfNothing :: Maybe a -> String -> a
-errorIfNothing a msg =
-  case a of
-    Just a -> a
-    Nothing -> error msg
+  path <- return $ cwd </> "src" </> "Day" <> show day </> fileName <> ".txt"
+  exists <- doesFileExist path
+  content <- case exists of
+    True -> readFile path
+    False -> throwIO (InputNotFoundException day fileName)
+  case content of
+    "" -> throwIO (InputFileEmptyException fileName)
+    _ -> return content
