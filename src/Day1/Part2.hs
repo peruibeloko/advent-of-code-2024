@@ -2,7 +2,7 @@ module Day1.Part2 where
 
 import Data.List (sort)
 import qualified Data.Map.Strict as Map
-import Utils (count, frequencies, toInt)
+import Utils (frequencies, toInt)
 
 solution :: String -> String
 solution input =

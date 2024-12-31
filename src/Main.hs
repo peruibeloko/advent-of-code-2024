@@ -1,13 +1,11 @@
 module Main (main) where
 
 import Control.Exception (throwIO)
-import Data.Maybe (isNothing)
 import ErrorHandling (PuzzleInputException (..), UnhandledPuzzleTriple, handleException, throwParseErrors)
-import Runner (PuzzleTriple, aoc)
+import Runner (aoc)
 import System.Directory (doesFileExist, getCurrentDirectory)
 import System.Environment (getArgs)
 import System.FilePath ((</>))
-import Text.Read (readMaybe)
 import Utils (toInt)
 
 main :: IO ()
