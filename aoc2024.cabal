@@ -5,6 +5,14 @@ version: 1.0
 executable aoc2024
   hs-source-dirs: src
   main-is: Main.hs
+  ghc-options: -Wall
+  build-depends:
+    Cabal
+    , base
+    , directory
+    , filepath
+    , containers
+    , mtl
   other-modules:
     Utils
     Runner
@@ -59,9 +67,3 @@ executable aoc2024
     Day24.Part2
     Day25.Part1
     Day25.Part2
-  build-depends:
-    Cabal
-    , base
-    , directory
-    , filepath
-    , containers

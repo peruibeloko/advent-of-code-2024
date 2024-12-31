@@ -25,3 +25,6 @@ frequencies xs =
 maybeString :: String -> Maybe String
 maybeString "" = Nothing
 maybeString str = Just str
+
+interpolate :: (Show a) => [a] -> String
+interpolate xs = foldl (<>) "" $ map show xs
