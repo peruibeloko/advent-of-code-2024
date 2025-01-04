@@ -38,6 +38,11 @@ async function encryptInputs(password: string) {
 
     const contents = new TextEncoder().encode(Deno.readTextFileSync(path));
 
+    if (contents.length === 0) {
+      console.log('Empty file, skipping');
+      continue;
+    }
+
     const salt = crypto.getRandomValues(new Uint8Array(SALT_SIZE));
     const iv = crypto.getRandomValues(new Uint8Array(IV_SIZE));
     const key = await deriveKey(baseKey, salt);
@@ -55,10 +60,14 @@ async function encryptInputs(password: string) {
 }
 
 async function decryptInputs(password: string) {
-  const inputs = await Array.fromAsync(expandGlob('src/**/*.bin'));
+  const inputs = await Array.fromAsync(expandGlob('../src/**/*.bin'));
   const baseKey = await importPassword(password);
 
+  console.log('Found', inputs.length, 'files');
+
   for (const { path } of inputs) {
+    console.log('Currently reading:', path);
+
     const contents = Deno.readFileSync(path);
 
     const salt = contents.slice(0, SALT_SIZE);
