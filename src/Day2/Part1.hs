@@ -6,7 +6,7 @@ data Direction = Up | Down deriving (Eq)
 
 solution :: String -> String
 solution input =
-  show $ length $ filter isSafeCall $ parse input
+  show $ length $ filter isReportSafe $ parse input
 
 parse :: String -> [[Int]]
 parse input =
@@ -24,20 +24,20 @@ withinBounds a b = result >= 1 && result <= 3
   where
     result = diff a b
 
-isSafeCall :: [Int] -> Bool
-isSafeCall (x : xs) | x == head xs = False
-isSafeCall (x : xs) | not $ withinBounds x $ head xs = False
-isSafeCall (x : xs) = isSafe xs $ direction x $ head xs
+isReportSafe :: [Int] -> Bool
+isReportSafe (x : xs) | x == head xs = False
+isReportSafe (x : xs) | not $ withinBounds x $ head xs = False
+isReportSafe (x : xs) = isReportSafeRecursion xs $ direction x $ head xs
 
-isSafe :: [Int] -> Direction -> Bool
-isSafe (a : b : []) prevDir = isSafeStep (a, b) prevDir
-isSafe (x : xs) prevDir =
-  if isCurrentSafe then isSafe xs currDir else False
+isReportSafeRecursion :: [Int] -> Direction -> Bool
+isReportSafeRecursion (a : b : []) prevDir = isReadingSafe (a, b) prevDir
+isReportSafeRecursion (x : xs) prevDir =
+  if isCurrentSafe then isReportSafeRecursion xs currDir else False
   where
-    isCurrentSafe = isSafeStep (x, head xs) prevDir
+    isCurrentSafe = isReadingSafe (x, head xs) prevDir
     currDir = (direction x $ head xs)
 
-isSafeStep :: (Int, Int) -> Direction -> Bool
-isSafeStep (a, b) _ | not $ withinBounds a b = False
-isSafeStep (a, b) prevDir | (/=) prevDir $ direction a b = False
-isSafeStep _ _ = True
+isReadingSafe :: (Int, Int) -> Direction -> Bool
+isReadingSafe (a, b) _ | not $ withinBounds a b = False
+isReadingSafe (a, b) prevDir | (/=) prevDir $ direction a b = False
+isReadingSafe _ _ = True
