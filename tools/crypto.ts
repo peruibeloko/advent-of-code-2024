@@ -28,10 +28,14 @@ function deriveKey(baseKey: CryptoKey, salt: Uint8Array) {
 }
 
 async function encryptInputs(password: string) {
-  const inputs = await Array.fromAsync(expandGlob('src/**/*.txt'));
+  const inputs = await Array.fromAsync(expandGlob('../src/**/*.txt'));
   const baseKey = await importPassword(password);
 
+  console.log('Found', inputs.length, 'files');
+
   for (const { path } of inputs) {
+    console.log('Currently reading:', path);
+
     const contents = new TextEncoder().encode(Deno.readTextFileSync(path));
 
     const salt = crypto.getRandomValues(new Uint8Array(SALT_SIZE));
@@ -58,7 +62,7 @@ async function decryptInputs(password: string) {
     const contents = Deno.readFileSync(path);
 
     const salt = contents.slice(0, SALT_SIZE);
-    const iv = contents.slice(SALT_SIZE, SALT_SIZE + IV_SIZE);    
+    const iv = contents.slice(SALT_SIZE, SALT_SIZE + IV_SIZE);
     const key = await deriveKey(baseKey, salt);
 
     const inputData = contents.slice(SALT_SIZE + IV_SIZE);
@@ -80,6 +84,6 @@ switch (mode) {
     break;
 
   default:
-    console.log('Usage: crypto <encrypt | decrypt> <key>');
+    console.log('Usage: crypto <encrypt | decrypt> <password>');
     break;
 }
