@@ -13,6 +13,8 @@ executable aoc2024
     , filepath
     , containers
     , mtl
+    , split
+    , regex-tdfa
   other-modules:
     Utils
     Runner
