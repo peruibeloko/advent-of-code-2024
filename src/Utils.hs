@@ -1,10 +1,12 @@
 module Utils where
 
+import Data.Array (elems)
 import Data.Map (Map)
 import qualified Data.Map as Map
 import qualified Data.Set as Set
 import Text.Read (readMaybe)
-import Text.Regex.TDFA ((=~))
+import Text.Regex.TDFA (RegexLike (matchAllText), RegexMaker (makeRegex), (=~))
+import Text.Regex.TDFA.String (Regex)
 
 toInt :: String -> Maybe Int
 toInt x = readMaybe x :: Maybe Int
@@ -49,6 +51,12 @@ firstMatch pattern subject = subject =~ pattern :: String
 -- | Returns all matches of `pattern` agains `subject`
 matchAll :: Pattern -> String -> [String]
 matchAll pattern subject = map head $ matchRaw pattern subject
+
+-- | Returns all indexed matches of `pattern` agains `subject`
+matchAllIndexed :: Pattern -> String -> [(String, Int)]
+matchAllIndexed pattern subject = map (\(content, (pos, _)) -> (content, pos)) $ matched
+  where
+    matched = map (head . elems) $ matchAllText (makeRegex pattern :: Regex) subject
 
 -- | Returns a list of the captured groups in the matches of `pattern` agains `subject`
 matchGroups :: Pattern -> String -> [[String]]
