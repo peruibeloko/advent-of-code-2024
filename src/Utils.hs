@@ -41,6 +41,18 @@ interpolate xs = foldl (<>) "" $ map show xs
 type Pattern = String
 
 -- | Returns a list, of lists, of matches of `pattern` agains `subject`
+--
+-- Example:
+--
+-- [ <- All matches
+--  [full match, group 1, group 2], <- Match 1
+--  [full match, group 1, group 2], <- Match 2
+-- ]
+--
+-- [ <- All matches
+--  [full match], <- Match 1
+--  [full match], <- Match 2
+-- ]
 matchRaw :: Pattern -> String -> [[String]]
 matchRaw pattern subject = subject =~ pattern :: [[String]]
 
@@ -59,6 +71,12 @@ matchAllIndexed pattern subject = map (\(content, (pos, _)) -> (content, pos)) $
     matched = map (head . elems) $ matchAllText (makeRegex pattern :: Regex) subject
 
 -- | Returns a list of the captured groups in the matches of `pattern` agains `subject`
+--
+-- Example:
+-- [ <- All matches
+--  [group 1, group 2], <- Match 1
+--  [group 1, group 2], <- Match 2
+-- ]
 matchGroups :: Pattern -> String -> [[String]]
 matchGroups pattern subject = map tail $ matchRaw pattern subject
 
