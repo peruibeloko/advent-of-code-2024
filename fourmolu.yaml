@@ -1,0 +1,6 @@
+column-limit: 80
+indent-wheres: true
+record-brace-space: true
+haddock-style: multi-line-compact
+haddock-style-module: multi-line-compact
+let-style: mixed

@@ -1,6 +1,6 @@
 module Day3.Part1 where
 
-import Utils (toInt, matchGroups)
+import Utils (matchGroups, toInt)
 
 mulPattern :: String
 mulPattern = "mul\\(([0-9]+),([0-9]+)\\)"

@@ -3,7 +3,7 @@ module Day3.Part2 where
 import Data.List (sortBy)
 import Utils (matchAllIndexed, matchGroups, toInt)
 
-data Instruction = Mult Int Int | Enable | Disable
+data Instruction = Mult Int Int | Enable | Disable deriving Show
 
 data EvalState = On | Off
 
@@ -23,14 +23,27 @@ reservedWords = [(multPattern, "Mult"), (doPattern, "Enable"), (dontPattern, "Di
 
 solution :: String -> String
 solution input =
-  show $
-    foldl (+) 0 $
-      evaluateList On [] $
-        map (\(el, _) -> el) $
-          sortBy (\(_, a) (_, b) -> compare a b) $
-            parseInstructions inputString
+  show
+  $  foldl (+) 0 
+  $  evaluateList On []
+  $  map unpack
+  $  sortBy index
+  $  parseInstructions inputString
   where
     inputString = foldl (<>) "" $ lines input
+    index = (\(_, a) (_, b) -> compare a b)
+    unpack = (\(el, _) -> el)
+
+parseInstructions :: String -> [(Instruction, Int)]
+parseInstructions input = concatMap parseMatch matches
+  where
+    matchAndTag = \(pattern, label) -> (label, matchAllIndexed pattern input)
+    matches = map matchAndTag reservedWords
+
+parseMatch :: TaggedMatch -> [(Instruction, Int)]
+parseMatch ("Enable", ops) = map (\(_, idx) -> (Enable, idx)) ops
+parseMatch ("Disable", ops) = map (\(_, idx) -> (Disable, idx)) ops
+parseMatch ("Mult", ops) = map (\(content, idx) -> (parseMult content, idx)) ops
 
 parseMult :: String -> Instruction
 parseMult input =
@@ -38,18 +51,7 @@ parseMult input =
     [Just a, Just b] -> Mult a b
     _ -> Mult 0 0
   where
-    groups = map toInt $ map head $ matchGroups multPattern input
-
-parseMatch :: TaggedMatch -> [(Instruction, Int)]
-parseMatch ("Enable", ops) = map (\(_, idx) -> (Enable, idx)) ops
-parseMatch ("Disable", ops) = map (\(_, idx) -> (Disable, idx)) ops
-parseMatch ("Mult", ops) = map (\(content, idx) -> (parseMult content, idx)) ops
-
-parseInstructions :: String -> [(Instruction, Int)]
-parseInstructions input = concatMap parseMatch matches
-  where
-    matchAndTag = \(pattern, label) -> (label, matchAllIndexed pattern input)
-    matches = map matchAndTag reservedWords
+    groups = map toInt $ head $ matchGroups multPattern input
 
 evaluateList :: EvalState -> [Int] -> [Instruction] -> [Int]
 evaluateList _ output [] = output

@@ -6,7 +6,12 @@ import Utils (frequencies, toInt)
 
 solution :: String -> String
 solution input =
-  show $ getSimilarityScore 0 $ getFrequencies $ buildLists ([], []) $ map lineToTuple $ lines input
+  show
+  $ getSimilarityScore 0
+  $ getFrequencies
+  $ buildLists ([], [])
+  $ map lineToTuple
+  $ lines input
 
 lineToTuple :: String -> (Maybe Int, Maybe Int)
 lineToTuple line =
