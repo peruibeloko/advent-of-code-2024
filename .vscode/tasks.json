@@ -35,12 +35,58 @@
         "showReuseMessage": false,
         "clear": true
       }
+    },
+    {
+      "label": "encrypt",
+      "type": "shell",
+      "command": "deno run",
+      "args": ["--allow-read", "--allow-write", "crypto.ts", "encrypt", "${input:password}"],
+      "windows": {
+        "options": {
+          "cwd": "tools"
+        }
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "echo": false,
+        "reveal": "never",
+        "focus": false,
+        "panel": "new",
+        "showReuseMessage": false,
+        "clear": true
+      }
+    },
+    {
+      "label": "decrypt",
+      "type": "shell",
+      "command": "deno run",
+      "args": ["--allow-read", "--allow-write", "crypto.ts", "decrypt", "${input:password}"],
+      "problemMatcher": [],
+      "windows": {
+        "options": {
+          "cwd": "tools"
+        }
+      },
+      "presentation": {
+        "echo": false,
+        "reveal": "never",
+        "focus": false,
+        "panel": "new",
+        "showReuseMessage": false,
+        "clear": true
+      }
     }
   ],
   "inputs": [
     {
       "id": "puzzle",
       "description": "Day, part and input file",
+      "default": "",
+      "type": "promptString"
+    },
+    {
+      "id": "password",
+      "description": "Password",
       "default": "",
       "type": "promptString"
     }
