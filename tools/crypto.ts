@@ -1,4 +1,4 @@
-import { expandGlob } from '@std/fs';
+import { expandGlob, existsSync } from '@std/fs';
 import { dirname, basename, join } from '@std/path';
 
 const IV_SIZE = 96 / 8; // 96 bytes / 8 bytes per value
@@ -34,6 +34,13 @@ async function encryptInputs(password: string) {
   console.log('Found', inputs.length, 'files');
 
   for (const { path } of inputs) {
+    const outputPath = join(dirname(path), basename(path).split('.')[0] + '.bin');
+    
+    if (existsSync(outputPath)) {
+      console.log('Output file already exists, skipping');
+      continue;
+    }
+
     console.log('Currently reading:', path);
 
     const contents = new TextEncoder().encode(Deno.readTextFileSync(path));
@@ -49,7 +56,6 @@ async function encryptInputs(password: string) {
 
     const encryptedData = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, contents));
 
-    const outputPath = join(dirname(path), basename(path).split('.')[0] + '.bin');
     const outputData = new Uint8Array(salt.length + iv.length + encryptedData.length);
     outputData.set(salt);
     outputData.set(iv, salt.length);
@@ -66,6 +72,13 @@ async function decryptInputs(password: string) {
   console.log('Found', inputs.length, 'files');
 
   for (const { path } of inputs) {
+    const outputPath = join(dirname(path), basename(path).split('.')[0] + '.txt');
+    
+    if (existsSync(outputPath)) {
+      console.log('Output file already exists, skipping');
+      continue;
+    }
+    
     console.log('Currently reading:', path);
 
     const contents = Deno.readFileSync(path);
@@ -77,7 +90,7 @@ async function decryptInputs(password: string) {
     const inputData = contents.slice(SALT_SIZE + IV_SIZE);
     const decryptedData = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, inputData);
 
-    const outputPath = join(dirname(path), basename(path).split('.')[0] + '.txt');
+    
     Deno.writeTextFileSync(outputPath, new TextDecoder().decode(new Uint8Array(decryptedData)));
   }
 }
