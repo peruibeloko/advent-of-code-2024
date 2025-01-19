@@ -4,10 +4,11 @@ import Data.Array (elems)
 import Data.Map (Map)
 import qualified Data.Map as Map
 import qualified Data.Set as Set
-import Text.Read (readMaybe)
-import Text.Regex.TDFA (RegexLike (matchAllText), RegexMaker (makeRegex), (=~))
-import Text.Regex.TDFA.String (Regex)
 import Debug.Trace (traceShow)
+import Text.Read (readMaybe)
+import Text.Regex.PCRE (RegexLike (matchAllText), RegexMaker (makeRegex, makeRegexOpts), (=~), compExtended)
+import Text.Regex.PCRE.String (Regex, compile)
+import Text.Regex.PCRE.Wrap (wrapCompile, wrapMatchAll)
 
 toInt :: String -> Maybe Int
 toInt x = readMaybe x :: Maybe Int
@@ -62,6 +63,8 @@ Example:
 -}
 matchRaw :: Pattern -> String -> [[String]]
 matchRaw pattern subject = subject =~ pattern :: [[String]]
+  where
+    compiled = makeRegexOpts match -- ! THIS NEEDS GLOBAL FLAG
 
 -- | Returns the first match of `subject` against `pattern`
 firstMatch :: Pattern -> String -> String
@@ -92,5 +95,11 @@ matchGroups pattern subject = map tail $ matchRaw pattern subject
 isMatch :: Pattern -> String -> Bool
 isMatch pattern subject = subject =~ pattern :: Bool
 
-debug :: Show a => a -> a
+debug :: (Show a) => a -> a
 debug a = traceShow ("debug", a) a
+
+debugMsg :: (Show a) => String -> a -> a
+debugMsg msg a = traceShow (msg, a) a
+
+mapFns :: [a -> b] -> a -> [b]
+mapFns fs x = map (\f -> f x) fs

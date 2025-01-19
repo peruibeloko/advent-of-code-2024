@@ -15,7 +15,7 @@ executable aoc2024
     , mtl
     , array
     , split
-    , regex-tdfa
+    , regex-pcre-builtin
   other-modules:
     Utils
     Runner
