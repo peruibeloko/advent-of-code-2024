@@ -1,8 +1,10 @@
 module Day4.Part1 where
 
+import Utils (matchOverlapping, debug)
+
 solution :: String -> String
 solution input =
-  show $ foldl (+) 0 (mapFns countTypes inputString) -- ! missing actual matching stuff
+  show $ foldl (+) 0 (map (\f -> countMatches f inputString) countTypes)
   where
     lineSize = length . head . lines $ input
     inputString = concat $ lines input
@@ -16,6 +18,9 @@ solution input =
       , countPrimaryDiagonalBackwards lineSize
       , countSecondaryDiagonalBackwards lineSize
       ]
+
+countMatches :: String -> String -> Int
+countMatches pattern subject = length $ matchOverlapping pattern subject
 
 countHorizontal :: String
 countHorizontal = "(?=XMAS)"
@@ -31,60 +36,30 @@ countVertical lineSize =
 
 countVerticalBackwards :: Int -> String
 countVerticalBackwards lineSize =
-  concat
-    [ "(?=S.{"
-    , show (lineSize - 1)
-    , "}A.{"
-    , show (lineSize - 1)
-    , "}M.{"
-    , show (lineSize - 1)
-    , "}X)"
-    ]
+  "(?=S.{" <> pad <> "}A.{" <> pad <> "}M.{" <> pad <> "}X)"
+  where
+    pad = show (lineSize - 1)
 
 countPrimaryDiagonal :: Int -> String
 countPrimaryDiagonal lineSize =
-  concat
-    [ "(?=X.{"
-    , show (lineSize)
-    , "}M.{"
-    , show (lineSize)
-    , "}A.{"
-    , show (lineSize)
-    , "}S)"
-    ]
+  "(?=X.{" <> pad <> "}M.{" <> pad <> "}A.{" <> pad <> "}S)"
+  where
+    pad = show (lineSize)
 
 countSecondaryDiagonal :: Int -> String
 countSecondaryDiagonal lineSize =
-  concat
-    [ "(?=X.{"
-    , show (lineSize - 2)
-    , "}M.{"
-    , show (lineSize - 2)
-    , "}A.{"
-    , show (lineSize - 2)
-    , "}S)"
-    ]
+  "(?=X.{" <> pad <> "}M.{" <> pad <> "}A.{" <> pad <> "}S)"
+  where
+    pad = show (lineSize - 2)
 
 countPrimaryDiagonalBackwards :: Int -> String
 countPrimaryDiagonalBackwards lineSize =
-  concat
-    [ "(?=S.{"
-    , show (lineSize)
-    , "}A.{"
-    , show (lineSize)
-    , "}M.{"
-    , show (lineSize)
-    , "}X)"
-    ]
+  "(?=S.{" <> pad <> "}A.{" <> pad <> "}M.{" <> pad <> "}X)"
+  where
+    pad = show (lineSize)
 
 countSecondaryDiagonalBackwards :: Int -> String
 countSecondaryDiagonalBackwards lineSize =
-  concat
-    [ "(?=S.{"
-    , show (lineSize - 2)
-    , "}A.{"
-    , show (lineSize - 2)
-    , "}M.{"
-    , show (lineSize - 2)
-    , "}X)"
-    ]
+  "(?=S.{" <> pad <> "}A.{" <> pad <> "}M.{" <> pad <> "}X)"
+  where
+    pad = show (lineSize - 2)

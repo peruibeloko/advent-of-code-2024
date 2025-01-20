@@ -6,9 +6,8 @@ import qualified Data.Map as Map
 import qualified Data.Set as Set
 import Debug.Trace (traceShow)
 import Text.Read (readMaybe)
-import Text.Regex.PCRE (RegexLike (matchAllText), RegexMaker (makeRegex, makeRegexOpts), (=~), compExtended)
-import Text.Regex.PCRE.String (Regex, compile)
-import Text.Regex.PCRE.Wrap (wrapCompile, wrapMatchAll)
+import Text.Regex.PCRE (RegexLike (matchAllText), makeRegex, (=~))
+import Text.Regex.PCRE.String (Regex)
 
 toInt :: String -> Maybe Int
 toInt x = readMaybe x :: Maybe Int
@@ -63,8 +62,6 @@ Example:
 -}
 matchRaw :: Pattern -> String -> [[String]]
 matchRaw pattern subject = subject =~ pattern :: [[String]]
-  where
-    compiled = makeRegexOpts match -- ! THIS NEEDS GLOBAL FLAG
 
 -- | Returns the first match of `subject` against `pattern`
 firstMatch :: Pattern -> String -> String
@@ -95,8 +92,17 @@ matchGroups pattern subject = map tail $ matchRaw pattern subject
 isMatch :: Pattern -> String -> Bool
 isMatch pattern subject = subject =~ pattern :: Bool
 
-debug :: (Show a) => a -> a
-debug a = traceShow ("debug", a) a
+matchOverlapping :: String -> String -> [String]
+matchOverlapping pattern subject =
+  case result of
+    (prefix,    "", suffix, [])  | and [prefix == subject, suffix == subject] -> []
+    (     _,     _,     "",  _) -> []
+    (     _, match,   rest,  _) -> match : matchOverlapping pattern (tail rest)
+  where
+    result = subject =~ pattern :: (String, String, String, [String])
+
+debug :: (Show a) => String -> a -> a
+debug msg a = traceShow (msg, a) a
 
 debugMsg :: (Show a) => String -> a -> a
 debugMsg msg a = traceShow (msg, a) a

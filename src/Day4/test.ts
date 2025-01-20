@@ -21,7 +21,7 @@ function crosswords(lineLength: number, input: string) {
   return patterns.reduce((acc, pattern) => acc + count(input.matchAll(pattern)), 0);
 }
 
-const contents: string = Deno.readTextFileSync('test.txt');
+const contents: string = Deno.readTextFileSync('input.txt');
 const lines = contents.split('\r\n');
 const input = lines.join('');
 const result = crosswords(lines[0].length, input);
