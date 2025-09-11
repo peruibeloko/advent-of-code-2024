@@ -1,10 +1,10 @@
 module Day4.Part1 where
 
-import Utils (matchOverlapping, debug)
+import Utils (matchOverlapping)
 
 solution :: String -> String
 solution input =
-  show $ foldl (+) 0 (map (\f -> countMatches f inputString) countTypes)
+  show $ sum (map (`countMatches` inputString) countTypes)
   where
     lineSize = length . head . lines $ input
     inputString = concat $ lines input
@@ -44,7 +44,7 @@ countPrimaryDiagonal :: Int -> String
 countPrimaryDiagonal lineSize =
   "(?=X.{" <> pad <> "}M.{" <> pad <> "}A.{" <> pad <> "}S)"
   where
-    pad = show (lineSize)
+    pad = show lineSize
 
 countSecondaryDiagonal :: Int -> String
 countSecondaryDiagonal lineSize =
@@ -56,7 +56,7 @@ countPrimaryDiagonalBackwards :: Int -> String
 countPrimaryDiagonalBackwards lineSize =
   "(?=S.{" <> pad <> "}A.{" <> pad <> "}M.{" <> pad <> "}X)"
   where
-    pad = show (lineSize)
+    pad = show lineSize
 
 countSecondaryDiagonalBackwards :: Int -> String
 countSecondaryDiagonalBackwards lineSize =
