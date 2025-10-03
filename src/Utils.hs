@@ -95,17 +95,14 @@ isMatch pattern subject = subject =~ pattern :: Bool
 matchOverlapping :: String -> String -> [String]
 matchOverlapping pattern subject =
   case result of
-    (prefix,    "", suffix, [])  | and [prefix == subject, suffix == subject] -> []
-    (     _,     _,     "",  _) -> []
-    (     _, match,   rest,  _) -> match : matchOverlapping pattern (tail rest)
+    (prefix, "", suffix, []) | and [prefix == subject, suffix == subject] -> []
+    (_, _, "", _) -> []
+    (_, match, rest, _) -> match : matchOverlapping pattern (tail rest)
   where
     result = subject =~ pattern :: (String, String, String, [String])
 
 debug :: (Show a) => String -> a -> a
 debug msg a = traceShow (msg, a) a
-
-debugMsg :: (Show a) => String -> a -> a
-debugMsg msg a = traceShow (msg, a) a
 
 mapFns :: [a -> b] -> a -> [b]
 mapFns fs x = map (\f -> f x) fs

@@ -1,40 +1,53 @@
 module Day5.Part1 where
 
-import Data.Map (Map, lookup)
-import Data.List.Split (splitOn)
-import qualified Data.IntMap as Map
+import Data.IntMap.Strict (IntMap)
+import qualified Data.IntMap.Strict as Map
 
-type Rules = Map Int [Int]
-type ParsedInput = (Rules, [[Int]])
+import Data.Set (Set)
+import qualified Data.Set as Set
+
+import Data.List.Split (splitOn)
+import Data.Maybe (fromMaybe)
+import Utils (debug)
+import Prelude hiding (lookup)
+
+type Page = Int
+type Update = [Page]
+type Rules = IntMap (Set Page)
+type ParsedInput = (Rules, [Update])
 
 solution :: String -> String
 solution input = show $ sumMiddle $ filterValid $ parse input
+  where
 
 parse :: String -> ParsedInput
-parse input = (parseRules (lines rules) mempty, parsePages (lines pages))
+parse input = (parseRules rules Map.empty, pages)
   where
-    (rules : pages) = splitOn "\n\n" input
+    (rawRules : rawPages : _) = splitOn "\n\n" input
+    rules = map tuple $ map (map read . splitOn "|") $ lines rawRules
+    pages = map (map read . splitOn ",") $ lines rawPages
+    tuple (a : b : _) = (a, b)
 
-
-filterValid :: ParsedInput -> [[Int]]
-filterValid (rules, pages) =
-  filter isUpdateValid pages
-  where
-    isUpdateValid update = all (== True) $ map (isPageValid update) update
-    isPageValid update page =  map (\n -> n `elem` suffixes n) page
-    suffixes n = Data.Map.lookup n rules
-
-isValid :: Rules -> [Int] -> [Bool] -> [Bool]
-isValid _ [] out = out
-isValid rules (page : tail) out = out ++ (Map.lookup page )
-
-sumMiddle :: [[Int]] -> Int
-sumMiddle reports = sum $ map (!! 1) reports
-
-parseRules :: [String] -> Rules -> Rules
+parseRules :: [(Int, Int)] -> Rules -> Rules
 parseRules [] output = output
-parseRules rule output =
-  Map.insert
+parseRules ((base, suffix) : rest) output =
+  case Map.lookup base output of
+    Just s -> parseRules rest $ Map.insert base (Set.insert suffix s) output
+    Nothing -> parseRules rest $ Map.insert base (Set.fromList [suffix]) output
 
-parsePages :: [String] -> [[Int]]
-parsePages input = map (map read . splitOn ",") input
+filterValid :: ParsedInput -> [Update]
+filterValid (rules, updates) = filter (isUpdateValid rules []) updates
+
+isUpdateValid :: Rules -> [Bool] -> Update -> Bool
+isUpdateValid _ out [] = and out
+isUpdateValid rules out (page : rest) =
+  isUpdateValid rules (out ++ [checkTail]) rest
+  where
+    getSuffixes page = fromMaybe Set.empty $ Map.lookup page rules
+    checkTail = and $ map (\m -> Set.member m (getSuffixes page)) rest
+
+sumMiddle :: [Update] -> Int
+sumMiddle updates = sum $ map getMiddle updates
+  where
+    midpoint update = length update `div` 2
+    getMiddle update = head $ drop (midpoint update) update
