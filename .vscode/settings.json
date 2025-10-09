@@ -1,3 +1,7 @@
 {
-  "deno.enablePaths": ["./tools"]
+  "deno.enablePaths": [
+    "./tools",
+    "./src"
+  ],
+  "typescript.tsserver.experimental.enableProjectDiagnostics": false
 }

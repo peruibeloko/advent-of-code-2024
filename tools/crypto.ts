@@ -95,7 +95,9 @@ async function decryptInputs(password: string) {
   }
 }
 
-const [mode, password] = Deno.args;
+const [mode] = Deno.args;
+const password = prompt("Password:") ?? "";
+
 switch (mode) {
   case 'encrypt':
     encryptInputs(password);
@@ -106,6 +108,6 @@ switch (mode) {
     break;
 
   default:
-    console.log('Usage: crypto <encrypt | decrypt> <password>');
+    console.log('Usage: deno task crypto <encrypt | decrypt>');
     break;
 }

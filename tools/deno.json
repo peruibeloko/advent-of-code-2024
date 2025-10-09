@@ -2,5 +2,19 @@
   "imports": {
     "@std/fs": "jsr:@std/fs@^1.0.8",
     "@std/path": "jsr:@std/path@^1.0.8"
+  },
+  "tasks": {
+    "encrypt": {
+      "description": "Encrypts input files",
+      "command": "deno run --allow-read --allow-write crypto.ts encrypt"
+    },
+    "decrypt": {
+      "description": "Decrypts input files",
+      "command": "deno run --allow-read --allow-write crypto.ts decrypt"
+    },
+    "setup": {
+      "description": "Creates folders for the 25 days, with 2 source files and input files each",
+      "command": "deno run --allow-write setup.ts"
+    },
   }
 }

@@ -4,7 +4,7 @@
 
 This file is responsible for encrypting and decrypting the puzzle inputs commited in binary form. This is nice for keeping the puzzle inputs along with the solutions in a safe way (not plain text). It uses AES-256-GCM cryptography with a SHA-256 PBKDF2 key derived from a password.
 
-Usage: `deno run --allow-read --allow-write crypto.ts <encrypt | decrypt> <password>`
+Usage: `deno task <encrypt | decrypt>`
 
 ## Setup
 
@@ -25,4 +25,4 @@ solution input =
 
 where `day` and `part` are injected during runtime.
 
-Usage: `deno run --allow-write setup.ts`
+Usage: `deno task setup`
